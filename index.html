@@ -6,6 +6,20 @@
   <title>Rusita & Tejash's Gender Reveal 🎊</title>
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Great+Vibes&family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBOOti1GuYTcTCRdPL9G2EtDGDp7RFViEM",
+      authDomain: "gender-reveal-66a2e.firebaseapp.com",
+      projectId: "gender-reveal-66a2e",
+      storageBucket: "gender-reveal-66a2e.firebasestorage.app",
+      messagingSenderId: "807231925533",
+      appId: "1:807231925533:web:3982a8f305abf35b5685f4"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -1285,10 +1299,10 @@
       if (e.key === 'partyMode') applyPartyMode(e.newValue);
     });
 
-    // ── Local storage (swap getAll/saveOne for Firestore when going live) ──
-    const DB_KEY = 'genderRevealPredictions';
-    function getAll()   { return JSON.parse(localStorage.getItem(DB_KEY) || '[]'); }
-    function saveOne(p) { const all = getAll(); all.push(p); localStorage.setItem(DB_KEY, JSON.stringify(all)); }
+    // ── Firestore ──
+    function saveOne(p) {
+      return db.collection('predictions').add(p);
+    }
 
     // ── State ──
     let current = 0;
@@ -1393,9 +1407,9 @@
     }
 
     // ── Submit ──
-    function submitAll() {
+    async function submitAll() {
       const guestName = document.getElementById('guestName').value.trim();
-      saveOne({
+      await saveOne({
         guestName,
         gender:         sel.gender,
         looksLike:      sel.looks,
