@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Rusita & Tejash's Gender Reveal 🎊</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Great+Vibes&family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html { height: 100%; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      height: 100dvh;
+      background: linear-gradient(to right, #ff4da6 0%, #c06ee8 45%, #5bb8f5 100%);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    /* ── Background doodle pattern ── */
+    .bg-pattern { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+
+    /* ── Top bar ── */
+    .top-bar {
+      flex-shrink: 0;
+      padding-top: max(10px, env(safe-area-inset-top));
+      padding-bottom: 10px;
+      text-align: center;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* Couple names */
+    .couple-wrap {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .cn-rusita {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.6rem;
+      font-weight: 700;
+      line-height: 1.1;
+      position: relative;
+      background: linear-gradient(90deg, #ffe0f0 0%, white 22%, #ffb6d9 45%, white 68%, #ffd6eb 88%, white 100%);
+      background-size: 250% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 14px rgba(255,100,180,0.9));
+      animation: wcShimmer 2.2s linear infinite;
+    }
+    .cn-rusita::before {
+      content: '✦';
+      position: absolute; left: -16px; top: 4px;
+      font-size: 0.65rem; color: white; -webkit-text-fill-color: white;
+      animation: wcSpark 1.7s ease-in-out infinite;
+    }
+    .cn-rusita::after {
+      content: '✦';
+      position: absolute; right: -16px; bottom: 4px;
+      font-size: 0.5rem; color: white; -webkit-text-fill-color: white;
+      animation: wcSpark 1.7s ease-in-out infinite 0.85s;
+    }
+
+    .cn-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 180px;
+      margin: 4px 0;
+    }
+    .cn-divider-line {
+      flex: 1;
+      height: 1.5px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.4);
+    }
+    .cn-amp {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.4rem;
+      line-height: 1;
+      color: white;
+      -webkit-text-fill-color: white;
+      animation: wcGlowPulse 1.8s ease-in-out infinite;
+    }
+
+    .cn-tejash {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2.6rem;
+      font-weight: 700;
+      line-height: 1.1;
+      position: relative;
+      background: linear-gradient(90deg, #d6eeff 0%, white 22%, #90c8ff 45%, white 68%, #c5e5ff 88%, white 100%);
+      background-size: 250% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 14px rgba(100,160,255,0.9));
+      animation: wcShimmer 2.2s linear infinite 0.5s;
+    }
+    .cn-tejash::before {
+      content: '✦';
+      position: absolute; left: -16px; top: 4px;
+      font-size: 0.5rem; color: white; -webkit-text-fill-color: white;
+      animation: wcSpark 1.7s ease-in-out infinite 0.4s;
+    }
+    .cn-tejash::after {
+      content: '✦';
+      position: absolute; right: -16px; bottom: 4px;
+      font-size: 0.65rem; color: white; -webkit-text-fill-color: white;
+      animation: wcSpark 1.7s ease-in-out infinite 1.2s;
+    }
+    .reveal-label {
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin-top: 8px;
+    }
+
+    /* ── Steps area ── */
+    .steps-wrapper {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+    .steps-track {
+      display: flex;
+      height: 100%;
+      transition: transform 0.38s cubic-bezier(0.4, 0, 0.2, 1);
+      will-change: transform;
+    }
+    .step {
+      min-width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 24px 12px;
+      gap: 18px;
+    }
+
+    .step-emoji { font-size: 3.2rem; line-height: 1; }
+    .step-q {
+      font-size: 1.55rem;
+      font-weight: 900;
+      color: white;
+      text-align: center;
+      line-height: 1.25;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+    .step-hint {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.65);
+      text-align: center;
+      margin-top: -10px;
+      font-weight: 600;
+    }
+
+    /* ── Text input ── */
+    .txt-input {
+      width: 100%;
+      max-width: 320px;
+      padding: 16px 20px;
+      border: 2.5px solid #eee;
+      border-radius: 16px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #333;
+      text-align: center;
+      background: white;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .txt-input:focus {
+      border-color: #e87ba0;
+      box-shadow: 0 0 0 4px rgba(232,123,160,0.12);
+    }
+    .txt-input::placeholder { color: #ccc; font-weight: 600; }
+
+    /* ── Big choice cards ── */
+    .choice-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      width: 100%;
+      max-width: 340px;
+    }
+    .choice-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 26px 10px;
+      border: 3px solid #eee;
+      border-radius: 22px;
+      background: white;
+      cursor: pointer;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s, background 0.15s;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+    }
+    .choice-btn .c-ico { font-size: 2.8rem; line-height: 1; }
+    .choice-btn .c-lbl { font-size: 0.95rem; font-weight: 900; color: #bbb; letter-spacing: 0.5px; }
+    .choice-btn:active { transform: scale(0.94); }
+
+    @media (hover: hover) {
+      .choice-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(0,0,0,0.1); }
+    }
+
+    .choice-btn.sel-blue {
+      border-color: #4a90d9;
+      background: linear-gradient(145deg, #eaf4ff, #d6ecff);
+      box-shadow: 0 6px 24px rgba(74,144,217,0.3);
+    }
+    .choice-btn.sel-blue .c-lbl { color: #2a6fb0; }
+
+    .choice-btn.sel-pink {
+      border-color: #e87ba0;
+      background: linear-gradient(145deg, #fff0f5, #ffe0ec);
+      box-shadow: 0 6px 24px rgba(232,123,160,0.3);
+    }
+    .choice-btn.sel-pink .c-lbl { color: #c0456e; }
+
+    /* ── Team Boy / Team Girl circle stickers ── */
+    .gender-card {
+      border-radius: 50%;
+      aspect-ratio: 1;
+      padding: 0;
+      gap: 0;
+      border: 4px solid rgba(255,255,255,0.65);
+    }
+    .gender-boy  { background: #6ec9f5; box-shadow: 0 8px 28px rgba(74,144,217,0.28); }
+    .gender-girl { background: #f77ab8; box-shadow: 0 8px 28px rgba(232,123,160,0.28); }
+    .gender-card.sel-blue {
+      background: #6ec9f5 !important;
+      border-color: white !important;
+      box-shadow: 0 0 0 4px white, 0 10px 36px rgba(74,144,217,0.5) !important;
+      transform: scale(1.08) !important;
+    }
+    .gender-card.sel-pink {
+      background: #f77ab8 !important;
+      border-color: white !important;
+      box-shadow: 0 0 0 4px white, 0 10px 36px rgba(232,123,160,0.5) !important;
+      transform: scale(1.08) !important;
+    }
+    .gc-its {
+      font-family: 'Dancing Script', cursive;
+      font-size: 0.82rem; font-weight: 700;
+      color: #111; line-height: 1;
+      margin-top: 10px;
+    }
+    .gc-name {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.35rem; font-weight: 700;
+      color: #111; line-height: 1;
+      margin-bottom: 8px;
+    }
+    .gc-icon { width: 90px; height: 64px; margin: 3px 0; display: block; overflow: visible; }
+
+    /* ── Inline error ── */
+    .step-err {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #ffe066;
+      display: none;
+      margin-top: -8px;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.2);
+    }
+
+    /* ── Bottom bar ── */
+    .bottom-bar {
+      flex-shrink: 0;
+      padding: 10px 20px 16px;
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      background: transparent;
+    }
+    .progress-dots {
+      display: flex;
+      justify-content: center;
+      gap: 7px;
+      margin-bottom: 12px;
+    }
+    .pdot {
+      height: 8px;
+      width: 8px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.3);
+      transition: width 0.28s ease, background 0.28s ease;
+    }
+    .pdot.active {
+      width: 26px;
+      background: white;
+    }
+
+    .nav-row { display: flex; gap: 10px; }
+
+    .back-btn {
+      flex: 0 0 72px;
+      padding: 15px 0;
+      border: 2px solid rgba(255,255,255,0.35);
+      border-radius: 14px;
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      color: rgba(255,255,255,0.85);
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      transition: background 0.12s;
+      display: none;
+    }
+    .back-btn:active { background: rgba(255,255,255,0.25); }
+
+    .next-btn {
+      flex: 1;
+      padding: 15px;
+      border: none;
+      border-radius: 14px;
+      background: white;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 900;
+      color: #7209b7;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      transition: transform 0.12s, opacity 0.12s;
+      letter-spacing: 0.3px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+    .next-btn:active { transform: scale(0.97); }
+
+    /* ── Success overlay ── */
+    /* ── Reveal screen ── */
+    .reveal-screen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(to right, #ff4da6 0%, #c06ee8 45%, #5bb8f5 100%);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 36px 28px;
+      z-index: 1003;
+      transition: background 0.8s ease;
+    }
+    .reveal-screen.pink {
+      background: linear-gradient(160deg, #ff85c8 0%, #ff4da6 40%, #e8007a 100%);
+    }
+
+    /* countdown */
+    .cd-wrap { display: flex; flex-direction: column; align-items: center; gap: 18px; }
+    .cd-label {
+      font-size: 1rem; font-weight: 800; letter-spacing: 3px;
+      text-transform: uppercase; color: rgba(255,255,255,0.65);
+    }
+    .cd-num {
+      font-family: 'Nunito', sans-serif;
+      font-size: 11rem; font-weight: 900; line-height: 1;
+      color: white;
+      text-shadow: 0 6px 48px rgba(0,0,0,0.25);
+      animation: cdPop 1s ease forwards;
+    }
+    .cd-dots { display: flex; gap: 10px; margin-top: 8px; }
+    .cd-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: rgba(255,255,255,0.35);
+      transition: background 0.3s;
+    }
+    .cd-dot.done { background: white; }
+
+    @keyframes cdPop {
+      0%   { transform: scale(2.2); opacity: 0; }
+      25%  { transform: scale(0.9); opacity: 1; }
+      45%  { transform: scale(1.05); }
+      60%  { transform: scale(1); }
+      80%  { transform: scale(1);   opacity: 1; }
+      100% { transform: scale(0.5); opacity: 0; }
+    }
+    /* prank: laughing emoji */
+    .cd-zero {
+      display: inline-block;
+      transform-origin: center bottom;
+      animation: zeroIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards,
+                 zeroLaugh 0.35s ease-in-out 0.4s infinite;
+    }
+    @keyframes zeroIn {
+      from { opacity: 0; transform: scale(0.1) translateX(-24px) rotate(-30deg); }
+      to   { opacity: 1; transform: scale(1)   translateX(0)     rotate(0deg); }
+    }
+    @keyframes zeroLaugh {
+      0%   { transform: rotate(-18deg) scale(1.18) translateY(-6px); }
+      50%  { transform: rotate(18deg)  scale(0.9)  translateY(6px);  }
+      100% { transform: rotate(-18deg) scale(1.18) translateY(-6px); }
+    }
+    .cd-one-dance {
+      display: inline-block;
+      transform-origin: center bottom;
+      animation: oneDance 0.35s ease-in-out infinite;
+    }
+    @keyframes oneDance {
+      0%   { transform: rotate(18deg)  scale(0.9)  translateY(6px);  }
+      50%  { transform: rotate(-18deg) scale(1.18) translateY(-6px); }
+      100% { transform: rotate(18deg)  scale(0.9)  translateY(6px);  }
+    }
+    @keyframes cdPopHold {
+      0%   { transform: scale(2.2); opacity: 0; }
+      25%  { transform: scale(0.9); opacity: 1; }
+      45%  { transform: scale(1.05); }
+      60%  { transform: scale(1); opacity: 1; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes cdStay {
+      0%   { transform: scale(1.15); opacity: 1; }
+      100% { transform: scale(1);    opacity: 1; }
+    }
+
+    /* reveal content */
+    .reveal-content { display: none; flex-direction: column; align-items: center; gap: 8px; animation: wcIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both; }
+    .reveal-content .rs-emoji { font-size: 5rem; animation: wcBounce 1.6s ease infinite; }
+    .reveal-content .rs-girl {
+      font-family: 'Dancing Script', cursive;
+      font-size: 7rem; font-weight: 700; line-height: 1;
+      color: white;
+      text-shadow: 0 4px 32px rgba(180,0,80,0.5), 0 0 60px rgba(255,255,255,0.3);
+      animation: wcBounce 2s ease-in-out infinite;
+    }
+    .reveal-content .rs-its-a-baby {
+      font-size: 1.6rem; font-weight: 900; letter-spacing: 3px;
+      text-transform: uppercase; color: rgba(255,255,255,0.85);
+      text-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+    .reveal-content p { color: rgba(255,255,255,0.82); font-size: 1rem; font-weight: 600; line-height: 1.8; margin-top: 12px; }
+    .reveal-content p strong { color: white; }
+
+    .success-overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(to right, #ff4da6 0%, #c06ee8 45%, #5bb8f5 100%);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 36px 28px;
+      z-index: 999;
+    }
+    .success-overlay .s-emoji { font-size: 5.5rem; margin-bottom: 22px; }
+    .success-overlay h2 {
+      font-size: 2.1rem;
+      font-weight: 900;
+      color: white;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+      margin-bottom: 14px;
+      line-height: 1.2;
+    }
+    .success-overlay p {
+      color: rgba(255,255,255,0.75);
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.7;
+    }
+    .success-overlay p strong { color: white; }
+
+    /* ── Already submitted screen ── */
+    .already-overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #ff4da6 0%, #c06ee8 50%, #5bb8f5 100%);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 36px 28px;
+      z-index: 1002;
+    }
+    .already-overlay .al-emoji { font-size: 4.5rem; margin-bottom: 20px; animation: wcBounce 1.8s ease infinite; }
+    .already-overlay h2 {
+      font-size: 2rem; font-weight: 900; color: white;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.2);
+      margin-bottom: 12px; line-height: 1.2;
+    }
+    .already-overlay .al-name {
+      font-size: 1.3rem; font-weight: 900; color: white;
+      margin-bottom: 16px;
+    }
+    .already-overlay p {
+      color: rgba(255,255,255,0.82);
+      font-size: 1rem; font-weight: 600; line-height: 1.75;
+    }
+    .already-overlay p strong { color: white; }
+    .already-overlay .al-picks {
+      display: flex; gap: 14px; margin: 20px 0;
+    }
+    .already-pill {
+      background: rgba(255,255,255,0.18);
+      border: 1.5px solid rgba(255,255,255,0.35);
+      border-radius: 50px;
+      padding: 8px 20px;
+      font-size: 0.95rem; font-weight: 800; color: white;
+    }
+
+    /* ── Shake ── */
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      25%      { transform: translateX(-8px); }
+      75%      { transform: translateX(8px); }
+    }
+    .shake { animation: shake 0.35s ease; }
+
+    /* ── Welcome overlay ── */
+    .welcome-overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #ff4da6 0%, #c06ee8 50%, #5bb8f5 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: opacity 0.45s ease;
+    }
+    .welcome-overlay.wc-out { opacity: 0; pointer-events: none; }
+
+    .wc-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      animation: wcIn 0.55s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes wcIn {
+      from { opacity: 0; transform: scale(0.78) translateY(20px); }
+      to   { opacity: 1; transform: scale(1)    translateY(0);    }
+    }
+
+    .wc-emoji-row {
+      font-size: 3.6rem;
+      line-height: 1;
+      animation: wcBounce 1.4s ease infinite;
+    }
+    @keyframes wcBounce {
+      0%,100% { transform: translateY(0); }
+      45%     { transform: translateY(-10px); }
+    }
+
+    .wc-names {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      margin-top: 6px;
+    }
+    .wc-name-r {
+      font-family: 'Dancing Script', cursive;
+      font-size: 3.2rem;
+      font-weight: 700;
+      line-height: 1.1;
+      position: relative;
+      background: linear-gradient(90deg, #ffe0f0 0%, white 22%, #ffb6d9 45%, white 68%, #ffd6eb 88%, white 100%);
+      background-size: 250% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 16px rgba(255,100,180,0.9));
+      animation: wcShimmer 2.2s linear infinite;
+    }
+    .wc-name-r::before {
+      content: '✦';
+      position: absolute; left: -18px; top: 4px;
+      font-size: 0.75rem; color: white; -webkit-text-fill-color: white;
+      animation: wcSpark 1.7s ease-in-out infinite;
+    }
+    .wc-name-r::after {
+      content: '✦';
+      position: absolute; right: -18px; bottom: 4px;
+      font-size: 0.55rem; color: white; -webkit-text-fill-color: white;
+      animation: wcSpark 1.7s ease-in-out infinite 0.85s;
+    }
+
+    .wc-divider {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 200px;
+      margin: 2px 0;
+    }
+    .wc-divider-line { flex: 1; height: 1.5px; background: rgba(255,255,255,0.45); border-radius: 2px; }
+    .wc-amp {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2.8rem;
+      color: white;
+      -webkit-text-fill-color: white;
+      animation: wcGlowPulse 1.8s ease-in-out infinite;
+    }
+
+    .wc-name-t {
+      font-family: 'Dancing Script', cursive;
+      font-size: 3.2rem;
+      font-weight: 700;
+      line-height: 1.1;
+      position: relative;
+      background: linear-gradient(90deg, #d6eeff 0%, white 22%, #90c8ff 45%, white 68%, #c5e5ff 88%, white 100%);
+      background-size: 250% 100%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 16px rgba(100,160,255,0.9));
+      animation: wcShimmer 2.2s linear infinite 0.5s;
+    }
+    .wc-name-t::before {
+      content: '✦';
+      position: absolute; left: -18px; top: 4px;
+      font-size: 0.55rem; color: white; -webkit-text-fill-color: white;
+      animation: wcSpark 1.7s ease-in-out infinite 0.4s;
+    }
+    .wc-name-t::after {
+      content: '✦';
+      position: absolute; right: -18px; bottom: 4px;
+      font-size: 0.75rem; color: white; -webkit-text-fill-color: white;
+      animation: wcSpark 1.7s ease-in-out infinite 1.2s;
+    }
+
+    @keyframes wcShimmer {
+      0%   { background-position: 100% 0; }
+      100% { background-position: -150% 0; }
+    }
+    @keyframes wcSpark {
+      0%,100% { opacity: 0; transform: scale(0.4) rotate(0deg); }
+      50%     { opacity: 1; transform: scale(1.4) rotate(20deg); }
+    }
+    @keyframes wcGlowPulse {
+      0%,100% { text-shadow: 0 2px 16px rgba(255,255,255,0.5), 0 0 30px rgba(255,255,255,0.2); }
+      50%     { text-shadow: 0 2px 30px rgba(255,255,255,1), 0 0 60px rgba(255,255,255,0.7); }
+    }
+
+    .wc-subtitle {
+      font-size: 0.82rem;
+      font-weight: 800;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      margin-top: 10px;
+    }
+    .wc-date {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.9);
+      margin-top: 2px;
+    }
+
+    .wc-start-btn {
+      position: absolute;
+      bottom: max(40px, env(safe-area-inset-bottom));
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 14px 40px;
+      border: none;
+      border-radius: 50px;
+      background: white;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #c06ee8;
+      cursor: pointer;
+      box-shadow: 0 6px 28px rgba(0,0,0,0.18);
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      animation: wcBtnPop 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.6s both;
+      transition: transform 0.12s, box-shadow 0.12s;
+    }
+    .wc-start-btn:active { transform: translateX(-50%) scale(0.95); }
+    @keyframes wcBtnPop {
+      from { opacity: 0; transform: translateX(-50%) scale(0.7); }
+      to   { opacity: 1; transform: translateX(-50%) scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top bar: title + mini countdown -->
+  <!-- Background baby doodles -->
+  <div class="bg-pattern" aria-hidden="true">
+   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 390 844" preserveAspectRatio="xMidYMid slice" style="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:0">
+    <defs>
+     <symbol id="s-star" viewBox="-13 -13 26 26"><polygon points="0,-12 2.8,-4.2 11.4,-3.7 4.6,1.6 7.1,10.4 0,5.4 -7.1,10.4 -4.6,1.6 -11.4,-3.7 -2.8,-4.2" fill="none" stroke="white" stroke-width="1.8" stroke-linejoin="round"/></symbol>
+     <symbol id="s-star-sm" viewBox="-9 -9 18 18"><polygon points="0,-8 1.9,-2.8 7.6,-2.5 3.1,1.1 4.7,7 0,3.6 -4.7,7 -3.1,1.1 -7.6,-2.5 -1.9,-2.8" fill="none" stroke="white" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+     <symbol id="s-spark" viewBox="-9 -9 18 18"><path d="M0,-8 1.6,-1.6 8,0 1.6,1.6 0,8 -1.6,1.6 -8,0 -1.6,-1.6Z" fill="white"/></symbol>
+     <symbol id="s-heart" viewBox="-9 -7 18 20"><path d="M0,4C0,-2-8,-5-8,1C-8,7 0,13 0,13C0,13 8,7 8,1C8,-5 0,-2 0,4" fill="none" stroke="white" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+     <symbol id="s-bottle" viewBox="-7 -11 14 30"><rect x="-5" y="0" width="10" height="18" rx="4" fill="none" stroke="white" stroke-width="1.7"/><rect x="-3" y="-8" width="6" height="9" rx="2" fill="none" stroke="white" stroke-width="1.4"/></symbol>
+     <symbol id="s-teddy" viewBox="-17 -21 34 36"><circle cx="0" cy="4" r="11" fill="none" stroke="white" stroke-width="1.7"/><circle cx="-7" cy="-11" r="5" fill="none" stroke="white" stroke-width="1.5"/><circle cx="7" cy="-11" r="5" fill="none" stroke="white" stroke-width="1.5"/><circle cx="-3" cy="2" r="1.4" fill="white"/><circle cx="3" cy="2" r="1.4" fill="white"/><path d="M-2,6 Q0,9 2,6" fill="none" stroke="white" stroke-width="1.2"/></symbol>
+     <symbol id="s-moon" viewBox="-11 -13 22 26"><path d="M2,-12A12,12 0 1 0 2,12A8,8 0 1 1 2,-12Z" fill="none" stroke="white" stroke-width="1.7"/></symbol>
+     <symbol id="s-sock" viewBox="-7 -14 20 28"><path d="M-3,-12L-3,4C-3,10 3,13 8,11C12,9 12,4 8,4C4,4 3,1 3,-12" fill="none" stroke="white" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+     <symbol id="s-onesie" viewBox="-15 -15 30 32"><path d="M-13,-5L-7,-5L-7,-9L-11,-13L-3,-13L0,-7L3,-13L11,-13L7,-9L7,-5L13,-5L13,15L-13,15Z" fill="none" stroke="white" stroke-width="1.7" stroke-linejoin="round"/></symbol>
+     <symbol id="s-balloon" viewBox="-12 -13 24 44"><ellipse cx="0" cy="0" rx="11" ry="13" fill="none" stroke="white" stroke-width="1.7"/><path d="M-2,13L0,17L2,13" fill="none" stroke="white" stroke-width="1.4"/><path d="M0,17Q5,27-2,37" fill="none" stroke="white" stroke-width="1.4" stroke-linecap="round"/></symbol>
+     <symbol id="s-rattle" viewBox="-9 -9 18 34"><circle cx="0" cy="0" r="8" fill="none" stroke="white" stroke-width="1.7"/><line x1="0" y1="8" x2="0" y2="24" stroke="white" stroke-width="1.7"/><circle cx="0" cy="24" r="4" fill="none" stroke="white" stroke-width="1.5"/></symbol>
+     <symbol id="s-block" viewBox="-11 -11 22 22"><rect x="-9" y="-9" width="18" height="18" rx="3" fill="none" stroke="white" stroke-width="1.7"/><text x="0" y="4" text-anchor="middle" fill="white" font-size="8" font-weight="bold" font-family="Arial">A</text></symbol>
+     <symbol id="s-pacifier" viewBox="-11 -11 22 26"><circle cx="0" cy="0" r="9" fill="none" stroke="white" stroke-width="1.7"/><circle cx="0" cy="0" r="4" fill="none" stroke="white" stroke-width="1.4"/><rect x="-5" y="9" width="10" height="4" rx="2" fill="none" stroke="white" stroke-width="1.4"/></symbol>
+     <symbol id="s-diamond" viewBox="-6 -8 12 16"><polygon points="0,-7 5.5,0 0,7 -5.5,0" fill="none" stroke="white" stroke-width="1.5"/></symbol>
+     <symbol id="s-boat" viewBox="-15 -21 30 34"><line x1="0" y1="-20" x2="0" y2="8" stroke="white" stroke-width="1.5"/><path d="M0,-18L0,2L-12,2Z" fill="none" stroke="white" stroke-width="1.5"/><path d="M0,-12L0,2L11,2Z" fill="none" stroke="white" stroke-width="1.4"/><path d="M-14,8Q0,14 14,8L10,2L-10,2Z" fill="none" stroke="white" stroke-width="1.7"/></symbol>
+     <symbol id="s-duck" viewBox="-13 -13 26 22"><ellipse cx="0" cy="4" rx="11" ry="8" fill="none" stroke="white" stroke-width="1.7"/><circle cx="5" cy="-6" r="6" fill="none" stroke="white" stroke-width="1.6"/><path d="M10,-7L15,-6L14,-3L10,-4Z" fill="none" stroke="white" stroke-width="1.3"/><circle cx="7" cy="-8" r="1.4" fill="white"/><path d="M-5,2Q0,-1 5,2" fill="none" stroke="white" stroke-width="1.2"/></symbol>
+     <symbol id="s-bow" viewBox="-11 -9 22 18"><path d="M-10,0Q-5,-8 0,0Q5,-8 10,0Q5,8 0,0Q-5,8-10,0Z" fill="none" stroke="white" stroke-width="1.7"/><circle cx="0" cy="0" r="2.5" fill="white"/></symbol>
+     <symbol id="s-shoe" viewBox="-12 -9 24 20"><path d="M-10,4L-10,-2Q-10,-8-4,-8L2,-8Q8,-8 10,-4L12,0Q14,6 8,8L-10,8Q-12,8-12,4Z" fill="none" stroke="white" stroke-width="1.7"/><line x1="-4" y1="-8" x2="-4" y2="4" stroke="white" stroke-width="1.2"/></symbol>
+     <symbol id="s-ball" viewBox="-12 -12 24 24"><circle cx="0" cy="0" r="11" fill="none" stroke="white" stroke-width="1.7"/><path d="M-11,0Q0,-8 11,0" fill="none" stroke="white" stroke-width="1.2"/><path d="M-11,0Q0,8 11,0" fill="none" stroke="white" stroke-width="1.2"/><line x1="0" y1="-11" x2="0" y2="11" stroke="white" stroke-width="1.2"/></symbol>
+    </defs>
+
+    <!-- ══ ROW 1  y≈5-80 ══ -->
+    <use href="#s-balloon"  x="2"   y="4"   width="22" height="38" opacity="0.30" transform="rotate(-18,13,23)"/>
+    <use href="#s-star"     x="38"  y="6"   width="24" height="24" opacity="0.30" transform="rotate(8,50,18)"/>
+    <use href="#s-spark"    x="76"  y="44"  width="13" height="13" opacity="0.30"/>
+    <use href="#s-heart"    x="100" y="14"  width="18" height="20" opacity="0.28"/>
+    <use href="#s-bottle"   x="134" y="20"  width="14" height="28" opacity="0.28" transform="rotate(-25,141,34)"/>
+    <use href="#s-spark"    x="165" y="50"  width="11" height="11" opacity="0.28"/>
+    <use href="#s-star-sm"  x="188" y="12"  width="18" height="18" opacity="0.28" transform="rotate(12,197,21)"/>
+    <use href="#s-sock"     x="218" y="22"  width="20" height="26" opacity="0.28" transform="rotate(22,228,35)"/>
+    <use href="#s-heart"    x="252" y="52"  width="14" height="16" opacity="0.26"/>
+    <use href="#s-spark"    x="275" y="16"  width="10" height="10" opacity="0.27"/>
+    <use href="#s-teddy"    x="296" y="5"   width="32" height="32" opacity="0.28"/>
+    <use href="#s-block"    x="344" y="44"  width="22" height="22" opacity="0.26"/>
+    <use href="#s-heart"    x="378" y="14"  width="14" height="16" opacity="0.26"/>
+
+    <!-- ══ ROW 1.5  y≈82-110 (filler) ══ -->
+    <use href="#s-diamond"  x="18"  y="86"  width="12" height="16" opacity="0.22" transform="rotate(15,24,94)"/>
+    <use href="#s-spark"    x="64"  y="90"  width="10" height="10" opacity="0.24"/>
+    <use href="#s-star-sm"  x="132" y="84"  width="14" height="14" opacity="0.22" transform="rotate(-10,139,91)"/>
+    <use href="#s-diamond"  x="208" y="88"  width="10" height="14" opacity="0.20"/>
+    <use href="#s-spark"    x="248" y="84"  width="10" height="10" opacity="0.22"/>
+    <use href="#s-star-sm"  x="318" y="86"  width="14" height="14" opacity="0.22" transform="rotate(8,325,93)"/>
+    <use href="#s-diamond"  x="374" y="82"  width="10" height="14" opacity="0.20" transform="rotate(-12,379,89)"/>
+
+    <!-- ══ ROW 2  y≈110-175 ══ -->
+    <use href="#s-moon"     x="-4"  y="128" width="24" height="26" opacity="0.28" transform="rotate(-10,8,141)"/>
+    <use href="#s-star"     x="28"  y="96"  width="26" height="26" opacity="0.30" transform="rotate(5,41,109)"/>
+    <use href="#s-onesie"   x="66"  y="132" width="30" height="30" opacity="0.28"/>
+    <use href="#s-spark"    x="110" y="100" width="12" height="12" opacity="0.28"/>
+    <use href="#s-heart"    x="138" y="140" width="16" height="18" opacity="0.26"/>
+    <use href="#s-diamond"  x="174" y="108" width="12" height="16" opacity="0.26" transform="rotate(25,180,116)"/>
+    <use href="#s-star-sm"  x="206" y="144" width="18" height="18" opacity="0.28"/>
+    <use href="#s-rattle"   x="242" y="100" width="18" height="32" opacity="0.28" transform="rotate(-12,251,116)"/>
+    <use href="#s-sock"     x="278" y="138" width="20" height="26" opacity="0.28" transform="rotate(-22,288,151)"/>
+    <use href="#s-spark"    x="314" y="102" width="13" height="13" opacity="0.30"/>
+    <use href="#s-bottle"   x="348" y="134" width="14" height="28" opacity="0.28" transform="rotate(18,355,148)"/>
+    <use href="#s-star-sm"  x="378" y="96"  width="16" height="16" opacity="0.26" transform="rotate(-8,386,104)"/>
+
+    <!-- ══ ROW 2.5  y≈178-205 (filler) ══ -->
+    <use href="#s-spark"    x="46"  y="182" width="10" height="10" opacity="0.22"/>
+    <use href="#s-heart"    x="100" y="178" width="12" height="14" opacity="0.20"/>
+    <use href="#s-diamond"  x="156" y="182" width="10" height="14" opacity="0.20" transform="rotate(10,161,189)"/>
+    <use href="#s-spark"    x="222" y="180" width="10" height="10" opacity="0.22"/>
+    <use href="#s-star-sm"  x="298" y="178" width="14" height="14" opacity="0.20" transform="rotate(-6,305,185)"/>
+    <use href="#s-diamond"  x="360" y="182" width="10" height="14" opacity="0.20"/>
+
+    <!-- ══ ROW 3  y≈210-295 ══ -->
+    <use href="#s-spark"    x="8"   y="216" width="12" height="12" opacity="0.28"/>
+    <use href="#s-heart"    x="34"  y="256" width="18" height="20" opacity="0.28"/>
+    <use href="#s-star-sm"  x="70"  y="204" width="18" height="18" opacity="0.28" transform="rotate(-14,79,213)"/>
+    <use href="#s-balloon"  x="102" y="238" width="22" height="36" opacity="0.28" transform="rotate(10,113,256)"/>
+    <use href="#s-star-sm"  x="146" y="210" width="16" height="16" opacity="0.26"/>
+    <use href="#s-boat"     x="176" y="255" width="30" height="34" opacity="0.26"/>
+    <use href="#s-spark"    x="222" y="220" width="11" height="11" opacity="0.28"/>
+    <use href="#s-heart"    x="252" y="258" width="16" height="18" opacity="0.26"/>
+    <use href="#s-moon"     x="286" y="202" width="22" height="24" opacity="0.28" transform="rotate(14,297,214)"/>
+    <use href="#s-onesie"   x="324" y="252" width="28" height="28" opacity="0.28"/>
+    <use href="#s-star-sm"  x="368" y="212" width="18" height="18" opacity="0.28" transform="rotate(10,377,221)"/>
+    <use href="#s-diamond"  x="142" y="272" width="12" height="16" opacity="0.22" transform="rotate(-18,148,280)"/>
+    <use href="#s-sock"     x="54"  y="240" width="16" height="22" opacity="0.24" transform="rotate(-14,62,251)"/>
+    <use href="#s-spark"    x="362" y="266" width="10" height="10" opacity="0.22"/>
+
+    <!-- ══ ROW 3.5  y≈298-318 (filler) ══ -->
+    <use href="#s-spark"    x="22"  y="300" width="10" height="10" opacity="0.22"/>
+    <use href="#s-diamond"  x="88"  y="296" width="10" height="14" opacity="0.20" transform="rotate(8,93,303)"/>
+    <use href="#s-heart"    x="196" y="300" width="12" height="14" opacity="0.20"/>
+    <use href="#s-spark"    x="270" y="298" width="10" height="10" opacity="0.22"/>
+    <use href="#s-star-sm"  x="338" y="296" width="14" height="14" opacity="0.20" transform="rotate(-5,345,303)"/>
+
+    <!-- ══ ROW 4  y≈320-435 ══ -->
+    <use href="#s-bottle"   x="2"   y="344" width="14" height="28" opacity="0.28" transform="rotate(-18,9,358)"/>
+    <use href="#s-star"     x="30"  y="306" width="26" height="26" opacity="0.30" transform="rotate(8,43,319)"/>
+    <use href="#s-spark"    x="74"  y="382" width="12" height="12" opacity="0.28"/>
+    <use href="#s-heart"    x="104" y="324" width="18" height="20" opacity="0.28"/>
+    <use href="#s-sock"     x="142" y="368" width="20" height="26" opacity="0.28" transform="rotate(28,152,381)"/>
+    <use href="#s-star-sm"  x="182" y="316" width="18" height="18" opacity="0.28" transform="rotate(-8,191,325)"/>
+    <use href="#s-duck"     x="216" y="365" width="26" height="22" opacity="0.28"/>
+    <use href="#s-spark"    x="260" y="320" width="13" height="13" opacity="0.30"/>
+    <use href="#s-teddy"    x="290" y="366" width="34" height="34" opacity="0.28"/>
+    <use href="#s-heart"    x="338" y="316" width="16" height="18" opacity="0.26"/>
+    <use href="#s-star"     x="364" y="370" width="24" height="24" opacity="0.28" transform="rotate(-12,376,382)"/>
+    <use href="#s-bow"      x="44"  y="400" width="22" height="18" opacity="0.26"/>
+    <use href="#s-pacifier" x="154" y="406" width="20" height="22" opacity="0.24"/>
+    <use href="#s-ball"     x="230" y="398" width="22" height="22" opacity="0.24"/>
+    <use href="#s-rattle"   x="312" y="406" width="16" height="30" opacity="0.24" transform="rotate(8,320,421)"/>
+
+    <!-- ══ ROW 4.5  y≈438-460 (filler) ══ -->
+    <use href="#s-spark"    x="16"  y="440" width="10" height="10" opacity="0.22"/>
+    <use href="#s-diamond"  x="80"  y="438" width="10" height="14" opacity="0.20" transform="rotate(-12,85,445)"/>
+    <use href="#s-heart"    x="178" y="440" width="12" height="14" opacity="0.20"/>
+    <use href="#s-spark"    x="264" y="438" width="10" height="10" opacity="0.22"/>
+    <use href="#s-star-sm"  x="348" y="440" width="14" height="14" opacity="0.20" transform="rotate(6,355,447)"/>
+
+    <!-- ══ ROW 5  y≈462-572 ══ -->
+    <use href="#s-star-sm"  x="6"   y="464" width="18" height="18" opacity="0.28" transform="rotate(5,15,473)"/>
+    <use href="#s-heart"    x="40"  y="524" width="16" height="18" opacity="0.26"/>
+    <use href="#s-rattle"   x="76"  y="450" width="18" height="32" opacity="0.28" transform="rotate(10,85,466)"/>
+    <use href="#s-spark"    x="116" y="508" width="12" height="12" opacity="0.28"/>
+    <use href="#s-star-sm"  x="150" y="462" width="18" height="18" opacity="0.28" transform="rotate(-10,159,471)"/>
+    <use href="#s-balloon"  x="186" y="522" width="22" height="36" opacity="0.28" transform="rotate(6,197,540)"/>
+    <use href="#s-shoe"     x="230" y="465" width="24" height="20" opacity="0.28" transform="rotate(-8,242,475)"/>
+    <use href="#s-heart"    x="264" y="522" width="16" height="18" opacity="0.26"/>
+    <use href="#s-star"     x="296" y="458" width="26" height="26" opacity="0.28" transform="rotate(14,309,471)"/>
+    <use href="#s-sock"     x="336" y="520" width="20" height="26" opacity="0.28" transform="rotate(-20,346,533)"/>
+    <use href="#s-spark"    x="372" y="464" width="12" height="12" opacity="0.28"/>
+    <use href="#s-ball"     x="224" y="550" width="24" height="24" opacity="0.24"/>
+    <use href="#s-bow"      x="56"  y="546" width="20" height="16" opacity="0.24"/>
+    <use href="#s-moon"     x="364" y="528" width="20" height="22" opacity="0.24" transform="rotate(-8,374,539)"/>
+    <use href="#s-diamond"  x="108" y="552" width="12" height="16" opacity="0.22" transform="rotate(14,114,560)"/>
+
+    <!-- ══ ROW 5.5  y≈576-598 (filler) ══ -->
+    <use href="#s-spark"    x="30"  y="578" width="10" height="10" opacity="0.22"/>
+    <use href="#s-diamond"  x="100" y="576" width="10" height="14" opacity="0.20"/>
+    <use href="#s-heart"    x="194" y="578" width="12" height="14" opacity="0.20"/>
+    <use href="#s-spark"    x="286" y="578" width="10" height="10" opacity="0.22"/>
+    <use href="#s-star-sm"  x="360" y="576" width="14" height="14" opacity="0.20" transform="rotate(-6,367,583)"/>
+
+    <!-- ══ ROW 6  y≈600-718 ══ -->
+    <use href="#s-heart"    x="4"   y="616" width="16" height="18" opacity="0.26"/>
+    <use href="#s-star-sm"  x="40"  y="656" width="18" height="18" opacity="0.28" transform="rotate(-8,49,665)"/>
+    <use href="#s-pacifier" x="76"  y="600" width="22" height="24" opacity="0.28"/>
+    <use href="#s-spark"    x="114" y="648" width="12" height="12" opacity="0.28"/>
+    <use href="#s-diamond"  x="150" y="608" width="12" height="16" opacity="0.26" transform="rotate(20,156,616)"/>
+    <use href="#s-star-sm"  x="188" y="654" width="16" height="16" opacity="0.26" transform="rotate(5,196,662)"/>
+    <use href="#s-bow"      x="226" y="616" width="22" height="18" opacity="0.26"/>
+    <use href="#s-bottle"   x="264" y="654" width="14" height="28" opacity="0.28" transform="rotate(-14,271,668)"/>
+    <use href="#s-spark"    x="304" y="610" width="13" height="13" opacity="0.28"/>
+    <use href="#s-star"     x="336" y="648" width="26" height="26" opacity="0.28" transform="rotate(-8,349,661)"/>
+    <use href="#s-heart"    x="376" y="610" width="14" height="16" opacity="0.24"/>
+    <use href="#s-boat"     x="70"  y="692" width="28" height="32" opacity="0.26"/>
+    <use href="#s-duck"     x="152" y="688" width="24" height="20" opacity="0.24"/>
+    <use href="#s-rattle"   x="218" y="690" width="16" height="30" opacity="0.24" transform="rotate(-6,226,705)"/>
+    <use href="#s-onesie"   x="300" y="686" width="26" height="26" opacity="0.24"/>
+    <use href="#s-spark"    x="374" y="696" width="11" height="11" opacity="0.22"/>
+
+    <!-- ══ ROW 6.5  y≈722-740 (filler) ══ -->
+    <use href="#s-diamond"  x="24"  y="724" width="10" height="14" opacity="0.20" transform="rotate(10,29,731)"/>
+    <use href="#s-spark"    x="120" y="722" width="10" height="10" opacity="0.20"/>
+    <use href="#s-heart"    x="210" y="724" width="12" height="14" opacity="0.18"/>
+    <use href="#s-spark"    x="306" y="722" width="10" height="10" opacity="0.20"/>
+    <use href="#s-diamond"  x="370" y="724" width="10" height="14" opacity="0.18"/>
+
+    <!-- ══ ROW 7  y≈742-824 ══ -->
+    <use href="#s-star-sm"  x="8"   y="740" width="18" height="18" opacity="0.28" transform="rotate(6,17,749)"/>
+    <use href="#s-heart"    x="46"  y="776" width="16" height="18" opacity="0.26"/>
+    <use href="#s-balloon"  x="90"  y="734" width="20" height="34" opacity="0.26" transform="rotate(-12,100,751)"/>
+    <use href="#s-spark"    x="134" y="776" width="11" height="11" opacity="0.26"/>
+    <use href="#s-diamond"  x="172" y="746" width="12" height="16" opacity="0.24" transform="rotate(-14,178,754)"/>
+    <use href="#s-star-sm"  x="208" y="776" width="18" height="18" opacity="0.26" transform="rotate(5,217,785)"/>
+    <use href="#s-duck"     x="244" y="742" width="26" height="22" opacity="0.26"/>
+    <use href="#s-sock"     x="286" y="770" width="20" height="26" opacity="0.26" transform="rotate(12,296,783)"/>
+    <use href="#s-star-sm"  x="326" y="744" width="16" height="16" opacity="0.26" transform="rotate(-5,334,752)"/>
+    <use href="#s-spark"    x="366" y="776" width="13" height="13" opacity="0.28"/>
+    <use href="#s-teddy"    x="34"  y="800" width="28" height="28" opacity="0.22"/>
+    <use href="#s-heart"    x="148" y="806" width="14" height="16" opacity="0.20"/>
+    <use href="#s-star-sm"  x="262" y="804" width="14" height="14" opacity="0.20" transform="rotate(8,269,811)"/>
+    <use href="#s-bow"      x="342" y="806" width="18" height="14" opacity="0.20"/>
+
+    <!-- ══ SCATTERED DOTS ══ -->
+    <circle cx="148" cy="78"  r="2.5" fill="white" opacity="0.22"/>
+    <circle cx="158" cy="70"  r="2"   fill="white" opacity="0.18"/>
+    <circle cx="153" cy="62"  r="2"   fill="white" opacity="0.18"/>
+    <circle cx="36"  cy="198" r="2.5" fill="white" opacity="0.20"/>
+    <circle cx="44"  cy="190" r="2"   fill="white" opacity="0.16"/>
+    <circle cx="353" cy="198" r="2.5" fill="white" opacity="0.20"/>
+    <circle cx="345" cy="190" r="2"   fill="white" opacity="0.16"/>
+    <circle cx="186" cy="418" r="2.5" fill="white" opacity="0.18"/>
+    <circle cx="194" cy="410" r="2"   fill="white" opacity="0.15"/>
+    <circle cx="202" cy="418" r="2"   fill="white" opacity="0.15"/>
+    <circle cx="36"  cy="588" r="2.5" fill="white" opacity="0.18"/>
+    <circle cx="44"  cy="580" r="2"   fill="white" opacity="0.15"/>
+    <circle cx="348" cy="592" r="2.5" fill="white" opacity="0.18"/>
+    <circle cx="356" cy="584" r="2"   fill="white" opacity="0.15"/>
+    <circle cx="195" cy="160" r="2.5" fill="white" opacity="0.18"/>
+    <circle cx="200" cy="152" r="2"   fill="white" opacity="0.15"/>
+    <circle cx="92"  cy="490" r="2.5" fill="white" opacity="0.18"/>
+    <circle cx="100" cy="482" r="2"   fill="white" opacity="0.15"/>
+    <circle cx="296" cy="490" r="2.5" fill="white" opacity="0.18"/>
+    <circle cx="288" cy="482" r="2"   fill="white" opacity="0.15"/>
+    <circle cx="195" cy="642" r="2.5" fill="white" opacity="0.16"/>
+    <circle cx="190" cy="634" r="2"   fill="white" opacity="0.13"/>
+    <circle cx="44"  cy="760" r="2"   fill="white" opacity="0.15"/>
+    <circle cx="348" cy="762" r="2"   fill="white" opacity="0.15"/>
+   </svg>
+  </div>
+
+  <div class="top-bar">
+    <div class="couple-wrap">
+      <span class="cn-rusita">Rusita</span>
+      <div class="cn-divider">
+        <div class="cn-divider-line"></div>
+        <span class="cn-amp">&amp;</span>
+        <div class="cn-divider-line"></div>
+      </div>
+      <span class="cn-tejash">Tejash</span>
+    </div>
+    <div class="reveal-label">✨ Gender Reveal ✨</div>
+  </div>
+
+  <!-- Step content area -->
+  <div class="steps-wrapper">
+    <div class="steps-track" id="track">
+
+      <!-- Step 1: Boy or Girl -->
+      <div class="step">
+        <div class="step-emoji">🍼</div>
+        <div class="step-q">Boy or Girl?</div>
+        <div class="choice-row">
+          <div class="choice-btn gender-card gender-boy" id="btn-boy" onclick="pick('gender','boy')">
+            <span class="gc-its">It's a</span>
+            <svg class="gc-icon" viewBox="0 0 120 85" xmlns="http://www.w3.org/2000/svg">
+              <!-- cloud -->
+              <ellipse cx="68" cy="77" rx="46" ry="11" fill="white" opacity="0.92"/>
+              <circle cx="40"  cy="71" r="10" fill="white" opacity="0.92"/>
+              <circle cx="56"  cy="66" r="13" fill="white" opacity="0.92"/>
+              <circle cx="74"  cy="64" r="14" fill="white" opacity="0.92"/>
+              <circle cx="90"  cy="68" r="11" fill="white" opacity="0.92"/>
+              <circle cx="103" cy="73" r="8"  fill="white" opacity="0.92"/>
+              <!-- body — darker blue so it reads on the sky-blue circle -->
+              <ellipse cx="74" cy="57" rx="33" ry="19" fill="#2e7fc0" transform="rotate(-12 74 57)"/>
+              <!-- legs curled right -->
+              <ellipse cx="98"  cy="68" rx="19" ry="11" fill="#2e7fc0" transform="rotate(26 98 68)"/>
+              <ellipse cx="106" cy="57" rx="14" ry="9"  fill="#2e7fc0" transform="rotate(-10 106 57)"/>
+              <!-- feet -->
+              <ellipse cx="110" cy="72" rx="10" ry="6.5" fill="#f9c8a8" transform="rotate(33 110 72)"/>
+              <ellipse cx="114" cy="61" rx="9"  ry="6"   fill="#f9c8a8" transform="rotate(5 114 61)"/>
+              <!-- arm tucked under head -->
+              <ellipse cx="48" cy="59" rx="13" ry="7" fill="#f9c8a8" transform="rotate(-26 48 59)"/>
+              <!-- head -->
+              <circle cx="27" cy="37" r="23" fill="#f9c8a8"/>
+              <!-- hair -->
+              <ellipse cx="27" cy="16" rx="19" ry="10" fill="#7a5030"/>
+              <path d="M8,30 Q11,15 27,13 Q43,15 46,30" fill="#7a5030"/>
+              <!-- ear -->
+              <circle cx="5" cy="39" r="5.5" fill="#f0b898"/>
+              <circle cx="5" cy="39" r="3"   fill="#f5c0a5"/>
+              <!-- rosy cheek -->
+              <ellipse cx="14" cy="44" rx="7" ry="4.5" fill="#f09090" opacity="0.38"/>
+              <!-- sleeping eye 1 -->
+              <path d="M15,36 Q20,32 25,36" stroke="#3a1e08" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+              <line x1="15"  y1="36"   x2="13.5" y2="34"   stroke="#3a1e08" stroke-width="1.2" stroke-linecap="round"/>
+              <line x1="20"  y1="32.5" x2="20"   y2="30.5" stroke="#3a1e08" stroke-width="1.2" stroke-linecap="round"/>
+              <line x1="25"  y1="36"   x2="26.5" y2="34"   stroke="#3a1e08" stroke-width="1.2" stroke-linecap="round"/>
+              <!-- sleeping eye 2 -->
+              <path d="M27,36 Q32,32 37,36" stroke="#3a1e08" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+              <line x1="27"  y1="36"   x2="25.5" y2="34"   stroke="#3a1e08" stroke-width="1.2" stroke-linecap="round"/>
+              <line x1="32"  y1="32.5" x2="32"   y2="30.5" stroke="#3a1e08" stroke-width="1.2" stroke-linecap="round"/>
+              <line x1="37"  y1="36"   x2="38.5" y2="34"   stroke="#3a1e08" stroke-width="1.2" stroke-linecap="round"/>
+              <!-- nose -->
+              <circle cx="28" cy="41" r="2.2" fill="#e09878"/>
+              <!-- tiny smile -->
+              <path d="M22,46 Q27,50 33,46" stroke="#c06850" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            </svg>
+            <span class="gc-name">Boy</span>
+          </div>
+          <div class="choice-btn gender-card gender-girl" id="btn-girl" onclick="pick('gender','girl')">
+            <span class="gc-its">It's a</span>
+            <svg class="gc-icon" viewBox="0 0 120 85" xmlns="http://www.w3.org/2000/svg">
+              <!-- body — white onesie pops against pink circle -->
+              <ellipse cx="74" cy="57" rx="33" ry="19" fill="white" transform="rotate(-12 74 57)"/>
+              <!-- pink tutu layers -->
+              <ellipse cx="63" cy="66" rx="31" ry="9"   fill="#f060a0" opacity="0.85" transform="rotate(-4 63 66)"/>
+              <ellipse cx="61" cy="63" rx="24" ry="7"   fill="#f8a0c8" opacity="0.9"  transform="rotate(-2 61 63)"/>
+              <!-- legs -->
+              <ellipse cx="98"  cy="68" rx="19" ry="11" fill="white"   transform="rotate(26 98 68)"/>
+              <ellipse cx="106" cy="57" rx="14" ry="9"  fill="white"   transform="rotate(-10 106 57)"/>
+              <!-- feet -->
+              <ellipse cx="110" cy="72" rx="10" ry="6.5" fill="#f9c8a8" transform="rotate(33 110 72)"/>
+              <ellipse cx="114" cy="61" rx="9"  ry="6"   fill="#f9c8a8" transform="rotate(5 114 61)"/>
+              <!-- arm -->
+              <ellipse cx="48" cy="59" rx="13" ry="7" fill="#f9c8a8" transform="rotate(-26 48 59)"/>
+              <!-- head -->
+              <circle cx="27" cy="37" r="23" fill="#f9c8a8"/>
+              <!-- hair -->
+              <ellipse cx="27" cy="16" rx="19" ry="10" fill="#7a5030"/>
+              <path d="M8,30 Q11,15 27,13 Q43,15 46,30" fill="#7a5030"/>
+              <!-- pink bow -->
+              <path d="M25,9 C19,3 11,5 13,11 C15,17 21,16 25,13Z" fill="#f040a0"/>
+              <path d="M29,9 C35,3 43,5 41,11 C39,17 33,16 29,13Z" fill="#f040a0"/>
+              <circle cx="27" cy="11" r="4"   fill="#c8006a"/>
+              <circle cx="26" cy="10" r="1.5" fill="#f890c8" opacity="0.7"/>
+              <!-- ear -->
+              <circle cx="5" cy="39" r="5.5" fill="#f0b898"/>
+              <circle cx="5" cy="39" r="3"   fill="#f5c0a5"/>
+              <!-- rosy cheek -->
+              <ellipse cx="14" cy="44" rx="7" ry="4.5" fill="#f09090" opacity="0.38"/>
+              <!-- sleeping eye 1 -->
+              <path d="M15,36 Q20,32 25,36" stroke="#3a1e08" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+              <line x1="15"  y1="36"   x2="13.5" y2="34"   stroke="#3a1e08" stroke-width="1.2" stroke-linecap="round"/>
+              <line x1="20"  y1="32.5" x2="20"   y2="30.5" stroke="#3a1e08" stroke-width="1.2" stroke-linecap="round"/>
+              <line x1="25"  y1="36"   x2="26.5" y2="34"   stroke="#3a1e08" stroke-width="1.2" stroke-linecap="round"/>
+              <!-- sleeping eye 2 -->
+              <path d="M27,36 Q32,32 37,36" stroke="#3a1e08" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+              <line x1="27"  y1="36"   x2="25.5" y2="34"   stroke="#3a1e08" stroke-width="1.2" stroke-linecap="round"/>
+              <line x1="32"  y1="32.5" x2="32"   y2="30.5" stroke="#3a1e08" stroke-width="1.2" stroke-linecap="round"/>
+              <line x1="37"  y1="36"   x2="38.5" y2="34"   stroke="#3a1e08" stroke-width="1.2" stroke-linecap="round"/>
+              <!-- nose -->
+              <circle cx="28" cy="41" r="2.2" fill="#e09878"/>
+              <!-- smile -->
+              <path d="M22,46 Q27,50 33,46" stroke="#c06850" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+            </svg>
+            <span class="gc-name">Girl</span>
+          </div>
+        </div>
+        <div class="step-err" id="errGender">Tap one to continue!</div>
+      </div>
+
+      <!-- Step 2: Looks like -->
+      <div class="step">
+        <div class="step-emoji">👀</div>
+        <div class="step-q">Who will the baby look like?</div>
+        <div class="choice-row">
+          <div class="choice-btn" id="btn-mom" onclick="pick('looks','mom')">
+            <span class="c-ico">👩</span>
+            <span class="c-lbl">Rusita</span>
+          </div>
+          <div class="choice-btn" id="btn-dad" onclick="pick('looks','dad')">
+            <span class="c-ico">👨</span>
+            <span class="c-lbl">Tejash</span>
+          </div>
+        </div>
+        <div class="step-err" id="errLooks">Tap one to continue!</div>
+      </div>
+
+      <!-- Step 3: Baby name suggestion (required) -->
+      <div class="step">
+        <div class="step-emoji">💌</div>
+        <div class="step-q">Suggest a baby name</div>
+        <input class="txt-input" id="nameSug" type="text"
+               placeholder="e.g. Arjun, Priya, Aiden…"
+               autocapitalize="words" />
+        <div class="step-err" id="errNameSug">Please suggest a name to continue!</div>
+      </div>
+
+      <!-- Step 4: Guest name -->
+      <div class="step">
+        <div class="step-emoji">✍️</div>
+        <div class="step-q">What's your name?</div>
+        <input class="txt-input" id="guestName" type="text"
+               placeholder="Your full name"
+               autocomplete="name" autocapitalize="words" />
+        <div class="step-err" id="errName">Please enter your name to continue!</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom bar: dots + navigation -->
+  <div class="bottom-bar">
+    <div class="progress-dots">
+      <div class="pdot active" id="dot-0"></div>
+      <div class="pdot" id="dot-1"></div>
+      <div class="pdot" id="dot-2"></div>
+      <div class="pdot" id="dot-3"></div>
+    </div>
+    <div class="nav-row">
+      <button class="back-btn" id="backBtn" onclick="prevStep()">←</button>
+      <button class="next-btn" id="nextBtn" onclick="nextStep()">Next →</button>
+    </div>
+  </div>
+
+  <!-- Reveal screen (activated from home.html) -->
+  <div class="reveal-screen" id="revealScreen">
+
+    <!-- Countdown phase -->
+    <div class="cd-wrap" id="cdWrap">
+      <div class="cd-label">✨ Get Ready! ✨</div>
+      <div class="cd-num" id="cdNum">10</div>
+      <div class="cd-dots" id="cdDots"></div>
+    </div>
+
+    <!-- Reveal content (shown after countdown) -->
+    <div class="reveal-content" id="revealContent">
+      <div class="rs-emoji">👧🎀</div>
+      <div class="rs-its-a-baby">✨ It's a Baby! ✨</div>
+      <div class="rs-girl">Girl</div>
+      <p>Rusita &amp; Tejash's little one<br/>is finally here! 🥰<br/><br/>
+      <strong>Thank you for celebrating with us! 💕</strong></p>
+    </div>
+
+  </div>
+
+  <!-- Welcome screen -->
+  <div class="welcome-overlay" id="welcomeOverlay">
+    <div class="wc-content">
+      <div class="wc-emoji-row">👶🎊</div>
+      <div class="wc-names">
+        <span class="wc-name-r">Rusita</span>
+        <div class="wc-divider">
+          <div class="wc-divider-line"></div>
+          <span class="wc-amp">&amp;</span>
+          <div class="wc-divider-line"></div>
+        </div>
+        <span class="wc-name-t">Tejash</span>
+      </div>
+      <div class="wc-subtitle">✨ Baby Gender Reveal ✨</div>
+      <div class="wc-date">30th May 2026</div>
+    </div>
+    <button class="wc-start-btn" onclick="dismissWelcome()">Let's Predict! 🔮</button>
+  </div>
+
+  <!-- Already submitted screen -->
+  <div class="already-overlay" id="alreadyOverlay">
+    <div class="al-emoji">🔒</div>
+    <h2>Already predicted!</h2>
+    <div class="al-name" id="alName"></div>
+    <div class="al-picks" id="alPicks"></div>
+    <p>You've already cast your prediction.<br/>
+    <strong>Each guest can only predict once! 😊</strong><br/><br/>
+    Check the live results on the big screen! 🎊</p>
+  </div>
+
+  <!-- Success screen -->
+  <div class="success-overlay" id="successOverlay">
+    <div class="s-emoji">🎊</div>
+    <h2>You're all set! 🎉</h2>
+    <p>Your prediction has been saved.<br/><br/>
+    <strong>Thank you so much for coming! 🥰</strong><br/>
+    Rusita &amp; Tejash are so happy<br/>to celebrate with you today! 💕</p>
+  </div>
+
+  <script>
+    // ── Party mode: apply current mode to the UI ──
+    // Swap localStorage.getItem('partyMode') → Firestore onSnapshot for cross-device sync
+    let countdownTimer = null;
+
+    function applyPartyMode(mode) {
+      const revealScreen   = document.getElementById('revealScreen');
+      const welcomeOverlay = document.getElementById('welcomeOverlay');
+
+      if (mode === 'reveal') {
+        revealScreen.style.display = 'flex';
+        welcomeOverlay.classList.remove('wc-out');
+        welcomeOverlay.style.display = 'none';
+        document.getElementById('alreadyOverlay').style.display = 'none';
+        startCountdown();
+      } else {
+        // Stop any running countdown and reset reveal screen
+        clearTimeout(countdownTimer);
+        revealScreen.style.display = 'none';
+        revealScreen.classList.remove('pink');
+        document.getElementById('cdWrap').style.display = 'flex';
+        document.getElementById('revealContent').style.display = 'none';
+
+        // Bring welcome back so guest re-enters the normal flow
+        if (welcomeOverlay.style.display === 'none') {
+          welcomeOverlay.style.opacity = '1';
+          welcomeOverlay.classList.remove('wc-out');
+          welcomeOverlay.style.display = 'flex';
+        }
+      }
+    }
+
+    function startCountdown() {
+      clearTimeout(countdownTimer);
+
+      const total   = 10;
+      let   current = total;
+      let   cycle   = 1;
+      const numEl   = document.getElementById('cdNum');
+      const dotsEl  = document.getElementById('cdDots');
+
+      function buildDots() {
+        dotsEl.innerHTML = Array.from({ length: total }, (_, i) =>
+          `<div class="cd-dot" id="dot-cd-${i}"></div>`
+        ).join('');
+      }
+      buildDots();
+
+      function tick() {
+        numEl.style.animation = 'none';
+        numEl.offsetHeight;
+        numEl.textContent = current;
+        numEl.style.animation = 'cdPop 1s ease forwards';
+
+        const dotIndex = total - current;
+        if (dotIndex > 0) {
+          const dot = document.getElementById(`dot-cd-${dotIndex - 1}`);
+          if (dot) dot.classList.add('done');
+        }
+
+        if (current === 1 && cycle === 1) {
+          // Keep "1" visible (cdPopHold instead of cdPop which fades out)
+          numEl.style.animation = 'none';
+          numEl.offsetHeight;
+          numEl.style.animation = 'cdPopHold 1s ease forwards';
+
+          // After same delay as every digit (1s), pop "0" in → "10"
+          countdownTimer = setTimeout(() => {
+            numEl.innerHTML = '<span class="cd-one-dance">1</span><span class="cd-zero">😂</span>';
+            // Hold the laugh for 5s so everyone sees it, then continue from 9
+            countdownTimer = setTimeout(() => {
+              cycle   = 2;
+              current = 9;
+              buildDots();
+              tick();
+            }, 5000);
+          }, 1000);
+          return;
+        }
+
+        if (current === 1 && cycle === 2) {
+          countdownTimer = setTimeout(() => {
+            document.getElementById('cdWrap').style.display = 'none';
+            document.getElementById('revealScreen').classList.add('pink');
+
+            const pink = ['#ff4da6','#ff85c8','#ffb6d9','#ff0080','#ffd6eb','#ffffff','#e8007a','#ffaad4'];
+            const z = { zIndex: 9999 };
+
+            // ── 3-second pink sparkle show ──
+            confetti({ ...z, particleCount: 160, spread: 180, origin: { x: 0.5, y: 0.5 }, colors: pink, scalar: 1.5, startVelocity: 50 });
+
+            setTimeout(() => {
+              confetti({ ...z, particleCount: 90, angle: 60,  spread: 55, origin: { x: 0, y: 1 }, colors: pink, scalar: 1.3 });
+              confetti({ ...z, particleCount: 90, angle: 120, spread: 55, origin: { x: 1, y: 1 }, colors: pink, scalar: 1.3 });
+            }, 500);
+
+            setTimeout(() => {
+              confetti({ ...z, particleCount: 120, spread: 360, origin: { x: 0.5, y: 0.35 }, colors: pink, shapes: ['star'], scalar: 1.5 });
+            }, 1100);
+
+            setTimeout(() => {
+              confetti({ ...z, particleCount: 130, spread: 160, origin: { x: 0.5, y: 0 }, colors: pink, scalar: 1.1, startVelocity: 28, gravity: 1.2 });
+            }, 1700);
+
+            setTimeout(() => {
+              confetti({ ...z, particleCount: 90, angle: 45,  spread: 50, origin: { x: 0, y: 0.5 }, colors: pink });
+              confetti({ ...z, particleCount: 90, angle: 135, spread: 50, origin: { x: 1, y: 0.5 }, colors: pink });
+            }, 2200);
+
+            setTimeout(() => {
+              confetti({ ...z, particleCount: 220, spread: 360, origin: { x: 0.5, y: 0.4 }, colors: pink, shapes: ['star'], scalar: 1.8, startVelocity: 60 });
+            }, 2700);
+
+            // ── Reveal text after 3 seconds ──
+            setTimeout(() => {
+              document.getElementById('revealContent').style.display = 'flex';
+            }, 3000);
+          }, 1000);
+          return;
+        }
+
+        current--;
+        countdownTimer = setTimeout(tick, 1000);
+      }
+
+      tick();
+    }
+
+    // Run on page load
+    applyPartyMode(localStorage.getItem('partyMode'));
+
+    // Listen for mode changes from home.html (same browser, any tab/window)
+    // Replace with Firebase onSnapshot when going live for cross-device sync
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'partyMode') applyPartyMode(e.newValue);
+    });
+
+    // ── Local storage (swap getAll/saveOne for Firestore when going live) ──
+    const DB_KEY = 'genderRevealPredictions';
+    function getAll()   { return JSON.parse(localStorage.getItem(DB_KEY) || '[]'); }
+    function saveOne(p) { const all = getAll(); all.push(p); localStorage.setItem(DB_KEY, JSON.stringify(all)); }
+
+    // ── State ──
+    let current = 0;
+    const TOTAL = 4;
+    let sel = { gender: null, looks: null };
+
+    // ── Navigate to step ──
+    function goTo(n) {
+      current = n;
+      document.getElementById('track').style.transform = `translateX(-${n * 100}%)`;
+      for (let i = 0; i < TOTAL; i++) {
+        document.getElementById(`dot-${i}`).className = 'pdot' + (i === n ? ' active' : '');
+      }
+      const backBtn = document.getElementById('backBtn');
+      backBtn.style.display = n === 0 ? 'none' : 'block';
+      document.getElementById('nextBtn').textContent = n === TOTAL - 1 ? '🎉 Submit!' : 'Next →';
+    }
+
+    function prevStep() {
+      if (current > 0) goTo(current - 1);
+    }
+
+    function nextStep() {
+      if (current === 0 && !sel.gender) {
+        document.getElementById('errGender').style.display = 'block';
+        return;
+      }
+
+      if (current === 1 && !sel.looks) {
+        document.getElementById('errLooks').style.display = 'block';
+        return;
+      }
+
+      if (current === 2) {
+        const sug = document.getElementById('nameSug').value.trim();
+        if (!sug) {
+          const inp = document.getElementById('nameSug');
+          document.getElementById('errNameSug').style.display = 'block';
+          inp.classList.add('shake');
+          setTimeout(() => inp.classList.remove('shake'), 350);
+          return;
+        }
+        document.getElementById('errNameSug').style.display = 'none';
+      }
+
+      if (current === TOTAL - 1) {
+        const name = document.getElementById('guestName').value.trim();
+        if (!name) {
+          const inp = document.getElementById('guestName');
+          document.getElementById('errName').style.display = 'block';
+          inp.classList.add('shake');
+          setTimeout(() => inp.classList.remove('shake'), 350);
+          return;
+        }
+        document.getElementById('errName').style.display = 'none';
+        submitAll();
+        return;
+      }
+
+      goTo(current + 1);
+    }
+
+    // ── Pick a choice (auto-advances after brief delay) ──
+    function pick(type, value) {
+      sel[type] = value;
+      if (type === 'gender') {
+        document.getElementById('btn-boy').className  = 'choice-btn gender-card gender-boy'  + (value === 'boy'  ? ' sel-blue' : '');
+        document.getElementById('btn-girl').className = 'choice-btn gender-card gender-girl' + (value === 'girl' ? ' sel-pink' : '');
+        document.getElementById('errGender').style.display = 'none';
+        setTimeout(() => goTo(1), 320);
+      } else {
+        document.getElementById('btn-mom').className = 'choice-btn' + (value === 'mom' ? ' sel-pink' : '');
+        document.getElementById('btn-dad').className = 'choice-btn' + (value === 'dad' ? ' sel-blue' : '');
+        document.getElementById('errLooks').style.display = 'none';
+        setTimeout(() => goTo(2), 320);
+      }
+    }
+
+    // ── On load: if already submitted, swap welcome button text ──
+    (function() {
+      if (localStorage.getItem('genderRevealDone')) {
+        document.querySelector('.wc-start-btn').textContent = 'See Your Prediction 🎊';
+      }
+    })();
+
+    // ── Welcome screen: dismiss on button tap ──
+    function dismissWelcome() {
+      const done = localStorage.getItem('genderRevealDone');
+
+      if (done) {
+        const d = JSON.parse(done);
+        document.getElementById('alName').textContent = 'Hi ' + d.name + '! 👋';
+        document.getElementById('alPicks').innerHTML =
+          `<span class="already-pill">${d.gender === 'boy' ? '👦 Boy' : '👧 Girl'}</span>` +
+          `<span class="already-pill">${d.looks  === 'mom' ? '👩 Rusita' : '👨 Tejash'}</span>`;
+        document.getElementById('alreadyOverlay').style.display = 'flex';
+      }
+
+      const overlay = document.getElementById('welcomeOverlay');
+      overlay.classList.add('wc-out');
+      overlay.addEventListener('transitionend', () => { overlay.style.display = 'none'; }, { once: true });
+    }
+
+    // ── Submit ──
+    function submitAll() {
+      const guestName = document.getElementById('guestName').value.trim();
+      saveOne({
+        guestName,
+        gender:         sel.gender,
+        looksLike:      sel.looks,
+        nameSuggestion: document.getElementById('nameSug').value.trim() || null,
+        timestamp:      Date.now()
+      });
+      localStorage.setItem('genderRevealDone', JSON.stringify({ name: guestName, gender: sel.gender, looks: sel.looks }));
+
+      document.getElementById('successOverlay').style.display = 'flex';
+
+      confetti({ particleCount: 140, spread: 80, origin: { y: 0.6 },
+        colors: ['#e87ba0','#4a90d9','#9b59b6','#ffd700','#ffb6c1'] });
+      setTimeout(() =>
+        confetti({ particleCount: 80, spread: 120, origin: { y: 0.35 },
+          colors: ['#ffb6c1','#87ceeb','#dda0dd'] }), 650);
+    }
+  </script>
+</body>
+</html>

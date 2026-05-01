@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Rusita & Tejash's Gender Reveal 🎊</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Great+Vibes&family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      min-height: 100dvh;
+      background: linear-gradient(to right, #ff4da6 0%, #c06ee8 45%, #5bb8f5 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 36px 28px max(36px, env(safe-area-inset-bottom));
+      overflow: hidden;
+    }
+
+    /* ── Names ── */
+    .couple-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+      margin-bottom: 8px;
+    }
+    .cn-r {
+      font-family: 'Dancing Script', cursive;
+      font-size: 3rem; font-weight: 700; line-height: 1.1;
+      position: relative;
+      background: linear-gradient(90deg, #ffe0f0 0%, white 22%, #ffb6d9 45%, white 68%, #ffd6eb 88%, white 100%);
+      background-size: 250% 100%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      filter: drop-shadow(0 0 16px rgba(255,100,180,0.9));
+      animation: shimmer 2.2s linear infinite;
+    }
+    .cn-r::before { content:'✦'; position:absolute; left:-20px; top:4px; font-size:0.7rem; color:white; -webkit-text-fill-color:white; animation:spark 1.7s ease-in-out infinite; }
+    .cn-r::after  { content:'✦'; position:absolute; right:-20px; bottom:4px; font-size:0.52rem; color:white; -webkit-text-fill-color:white; animation:spark 1.7s ease-in-out infinite 0.85s; }
+
+    .cn-divider { display:flex; align-items:center; gap:10px; width:200px; margin:4px 0; }
+    .cn-divider-line { flex:1; height:1.5px; background:rgba(255,255,255,0.45); border-radius:2px; }
+    .cn-amp { font-family:'Great Vibes',cursive; font-size:2.6rem; color:white; -webkit-text-fill-color:white; animation:glowPulse 1.8s ease-in-out infinite; }
+
+    .cn-t {
+      font-family: 'Dancing Script', cursive;
+      font-size: 3rem; font-weight: 700; line-height: 1.1;
+      position: relative;
+      background: linear-gradient(90deg, #d6eeff 0%, white 22%, #90c8ff 45%, white 68%, #c5e5ff 88%, white 100%);
+      background-size: 250% 100%;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      filter: drop-shadow(0 0 16px rgba(100,160,255,0.9));
+      animation: shimmer 2.2s linear infinite 0.5s;
+    }
+    .cn-t::before { content:'✦'; position:absolute; left:-20px; top:4px; font-size:0.52rem; color:white; -webkit-text-fill-color:white; animation:spark 1.7s ease-in-out infinite 0.4s; }
+    .cn-t::after  { content:'✦'; position:absolute; right:-20px; bottom:4px; font-size:0.7rem; color:white; -webkit-text-fill-color:white; animation:spark 1.7s ease-in-out infinite 1.2s; }
+
+    .reveal-label {
+      font-size: 0.72rem; font-weight: 800; letter-spacing: 2.5px;
+      text-transform: uppercase; color: rgba(255,255,255,0.6);
+      margin-bottom: 48px;
+    }
+
+    /* ── Buttons ── */
+    .btn-wrap { display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 320px; }
+
+    .home-btn {
+      width: 100%;
+      padding: 20px 24px;
+      border-radius: 20px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.1rem; font-weight: 900;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      transition: transform 0.13s, box-shadow 0.13s;
+      display: flex; align-items: center; gap: 14px;
+      text-decoration: none;
+    }
+    .home-btn:active { transform: scale(0.96); }
+
+    .btn-predict {
+      background: rgba(255,255,255,0.15);
+      border: 2px solid rgba(255,255,255,0.45);
+      color: white;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+    }
+    .btn-reveal {
+      background: rgba(255,255,255,0.15);
+      border: 2px solid rgba(255,255,255,0.45);
+      color: white;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.1);
+    }
+    .btn-save {
+      background: rgba(255,255,255,0.1);
+      border: 2px solid rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.5);
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+      transition: transform 0.13s, background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+    .btn-save.ready {
+      background: white;
+      border-color: white;
+      color: #c06ee8;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+
+    .home-btn.sel {
+      outline: 4px solid white;
+      outline-offset: 2px;
+      transform: scale(1.03);
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: max(32px, env(safe-area-inset-bottom));
+      left: 50%; transform: translateX(-50%);
+      background: rgba(20,20,30,0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: white; font-size: 0.88rem; font-weight: 700;
+      padding: 13px 22px; border-radius: 50px;
+      white-space: nowrap; text-align: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s; z-index: 999;
+    }
+    .toast.show { opacity: 1; }
+
+    .btn-icon { font-size: 1.8rem; line-height: 1; flex-shrink: 0; }
+    .btn-text { display: flex; flex-direction: column; text-align: left; }
+    .btn-title { font-size: 1.05rem; font-weight: 900; line-height: 1.2; }
+    .btn-sub   { font-size: 0.75rem; font-weight: 600; opacity: 0.65; margin-top: 2px; }
+
+    /* ── Live badge inside button ── */
+    .live-badge {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      margin-left: auto;
+      background: rgba(80,255,120,0.2);
+      border: 1.5px solid rgba(80,255,120,0.7);
+      border-radius: 20px;
+      padding: 5px 12px;
+      font-size: 0.68rem;
+      font-weight: 900;
+      letter-spacing: 2px;
+      color: #7fff9a;
+      flex-shrink: 0;
+      box-shadow: 0 0 14px rgba(80,255,120,0.5);
+    }
+    .live-badge.show {
+      display: flex;
+      animation: liveAppear 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    }
+    @keyframes liveAppear {
+      from { opacity: 0; transform: scale(0.6); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #7fff9a;
+      box-shadow: 0 0 6px #7fff9a;
+      animation: livePulse 1.2s infinite;
+    }
+    @keyframes livePulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.3; transform: scale(0.5); }
+    }
+
+    /* ── Date ── */
+    .home-date {
+      margin-top: 28px;
+      font-size: 0.8rem; font-weight: 700;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 1.5px;
+    }
+
+    @keyframes shimmer   { 0%{background-position:100% 0} 100%{background-position:-150% 0} }
+    @keyframes spark     { 0%,100%{opacity:0;transform:scale(0.4) rotate(0deg)} 50%{opacity:1;transform:scale(1.4) rotate(20deg)} }
+    @keyframes glowPulse { 0%,100%{text-shadow:0 2px 16px rgba(255,255,255,0.5)} 50%{text-shadow:0 2px 30px rgba(255,255,255,1),0 0 60px rgba(255,255,255,0.7)} }
+  </style>
+</head>
+<body>
+
+  <div class="couple-wrap">
+    <span class="cn-r">Rusita</span>
+    <div class="cn-divider">
+      <div class="cn-divider-line"></div>
+      <span class="cn-amp">&amp;</span>
+      <div class="cn-divider-line"></div>
+    </div>
+    <span class="cn-t">Tejash</span>
+  </div>
+  <div class="reveal-label">✨ Baby Gender Reveal · 30th May 2026 ✨</div>
+
+  <div class="btn-wrap">
+    <button class="home-btn btn-predict" id="btnPredict">
+      <span class="btn-icon">🍼</span>
+      <span class="btn-text">
+        <span class="btn-title">Prediction View</span>
+        <span class="btn-sub">Cast your guess for the baby</span>
+      </span>
+      <span class="live-badge" id="livePredict"><span class="live-dot"></span>LIVE</span>
+    </button>
+    <button class="home-btn btn-reveal" id="btnReveal">
+      <span class="btn-icon">🎊</span>
+      <span class="btn-text">
+        <span class="btn-title">Reveal Baby</span>
+        <span class="btn-sub">See live predictions & results</span>
+      </span>
+      <span class="live-badge" id="liveReveal"><span class="live-dot"></span>LIVE</span>
+    </button>
+    <button class="home-btn btn-save" id="saveBtn">
+      <span class="btn-icon">💾</span>
+      <span class="btn-text">
+        <span class="btn-title">Save</span>
+        <span class="btn-sub">Save your selection</span>
+      </span>
+    </button>
+  </div>
+
+  <div class="home-date">30TH MAY 2026</div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const MODE_KEY = 'partyMode'; // swap localStorage for Firestore when going live
+    let selected = localStorage.getItem(MODE_KEY) || null;
+
+    const btnPredict = document.getElementById('btnPredict');
+    const btnReveal  = document.getElementById('btnReveal');
+    const saveBtn    = document.getElementById('saveBtn');
+
+    function applyUI() {
+      btnPredict.classList.toggle('sel', selected === 'predict');
+      btnReveal.classList.toggle('sel',  selected === 'reveal');
+      saveBtn.classList.toggle('ready', selected !== null);
+    }
+
+    btnPredict.onclick = () => { selected = 'predict'; applyUI(); };
+    btnReveal.onclick  = () => { selected = 'reveal';  applyUI(); };
+
+    saveBtn.onclick = () => {
+      if (!selected) { showToast('Please select an option first'); return; }
+      localStorage.setItem(MODE_KEY, selected);
+      const label = selected === 'predict' ? 'Prediction Form' : 'Reveal Baby';
+      showToast('✅ Saved! Guests will now see: ' + label);
+    };
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    function updateLive() {
+      const saved = localStorage.getItem(MODE_KEY);
+      document.getElementById('livePredict').classList.toggle('show', saved === 'predict');
+      document.getElementById('liveReveal').classList.toggle('show',  saved === 'reveal');
+    }
+
+    saveBtn.onclick = () => {
+      if (!selected) { showToast('Please select an option first'); return; }
+      localStorage.setItem(MODE_KEY, selected);
+      const label = selected === 'predict' ? 'Prediction Form' : 'Reveal Baby';
+      showToast('✅ Saved! Guests will now see: ' + label);
+      updateLive();
+    };
+
+    updateLive();
+    applyUI();
+  </script>
+</body>
+</html>
