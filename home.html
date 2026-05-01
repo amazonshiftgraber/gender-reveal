@@ -261,9 +261,14 @@
 
     saveBtn.onclick = async () => {
       if (!selected) { showToast('Please select an option first'); return; }
-      await settingsDoc.set({ mode: selected });
-      const label = selected === 'predict' ? 'Prediction Form' : 'Reveal Baby';
-      showToast('✅ Saved! Guests will now see: ' + label);
+      try {
+        await settingsDoc.set({ mode: selected });
+        const label = selected === 'predict' ? 'Prediction Form' : 'Reveal Baby';
+        showToast('✅ Saved! Guests will now see: ' + label);
+      } catch (e) {
+        showToast('❌ Error: ' + e.message);
+        console.error(e);
+      }
     };
 
     function showToast(msg) {
