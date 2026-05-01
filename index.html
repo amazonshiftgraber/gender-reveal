@@ -1290,13 +1290,9 @@
       tick();
     }
 
-    // Run on page load
-    applyPartyMode(localStorage.getItem('partyMode'));
-
-    // Listen for mode changes from home.html (same browser, any tab/window)
-    // Replace with Firebase onSnapshot when going live for cross-device sync
-    window.addEventListener('storage', (e) => {
-      if (e.key === 'partyMode') applyPartyMode(e.newValue);
+    // Listen to Firestore for real-time mode changes from home.html
+    db.collection('settings').doc('config').onSnapshot(doc => {
+      if (doc.exists) applyPartyMode(doc.data().mode);
     });
 
     // ── Firestore ──

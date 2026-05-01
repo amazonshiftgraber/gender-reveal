@@ -227,26 +227,41 @@
 
   <div class="toast" id="toast"></div>
 
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <script>
-    const MODE_KEY = 'partyMode'; // swap localStorage for Firestore when going live
-    let selected = localStorage.getItem(MODE_KEY) || null;
+    firebase.initializeApp({
+      apiKey: "AIzaSyBOOti1GuYTcTCRdPL9G2EtDGDp7RFViEM",
+      authDomain: "gender-reveal-66a2e.firebaseapp.com",
+      projectId: "gender-reveal-66a2e",
+      storageBucket: "gender-reveal-66a2e.firebasestorage.app",
+      messagingSenderId: "807231925533",
+      appId: "1:807231925533:web:3982a8f305abf35b5685f4"
+    });
+    const db = firebase.firestore();
+    const settingsDoc = db.collection('settings').doc('config');
+
+    let selected = null;
 
     const btnPredict = document.getElementById('btnPredict');
     const btnReveal  = document.getElementById('btnReveal');
     const saveBtn    = document.getElementById('saveBtn');
 
-    function applyUI() {
-      btnPredict.classList.toggle('sel', selected === 'predict');
-      btnReveal.classList.toggle('sel',  selected === 'reveal');
-      saveBtn.classList.toggle('ready', selected !== null);
+    function applyUI(mode) {
+      selected = mode;
+      btnPredict.classList.toggle('sel', mode === 'predict');
+      btnReveal.classList.toggle('sel',  mode === 'reveal');
+      saveBtn.classList.toggle('ready', mode !== null);
+      document.getElementById('livePredict').classList.toggle('show', mode === 'predict');
+      document.getElementById('liveReveal').classList.toggle('show',  mode === 'reveal');
     }
 
-    btnPredict.onclick = () => { selected = 'predict'; applyUI(); };
-    btnReveal.onclick  = () => { selected = 'reveal';  applyUI(); };
+    btnPredict.onclick = () => applyUI('predict');
+    btnReveal.onclick  = () => applyUI('reveal');
 
-    saveBtn.onclick = () => {
+    saveBtn.onclick = async () => {
       if (!selected) { showToast('Please select an option first'); return; }
-      localStorage.setItem(MODE_KEY, selected);
+      await settingsDoc.set({ mode: selected });
       const label = selected === 'predict' ? 'Prediction Form' : 'Reveal Baby';
       showToast('✅ Saved! Guests will now see: ' + label);
     };
@@ -258,22 +273,10 @@
       setTimeout(() => t.classList.remove('show'), 3000);
     }
 
-    function updateLive() {
-      const saved = localStorage.getItem(MODE_KEY);
-      document.getElementById('livePredict').classList.toggle('show', saved === 'predict');
-      document.getElementById('liveReveal').classList.toggle('show',  saved === 'reveal');
-    }
-
-    saveBtn.onclick = () => {
-      if (!selected) { showToast('Please select an option first'); return; }
-      localStorage.setItem(MODE_KEY, selected);
-      const label = selected === 'predict' ? 'Prediction Form' : 'Reveal Baby';
-      showToast('✅ Saved! Guests will now see: ' + label);
-      updateLive();
-    };
-
-    updateLive();
-    applyUI();
+    // Load current mode from Firestore on open
+    settingsDoc.get().then(doc => {
+      if (doc.exists) applyUI(doc.data().mode);
+    });
   </script>
 </body>
 </html>

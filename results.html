@@ -632,8 +632,10 @@
       tick();
     }
 
-    applyPartyMode(localStorage.getItem('partyMode'));
-    window.addEventListener('storage', e => { if (e.key === 'partyMode') applyPartyMode(e.newValue); });
+    // Listen to Firestore for real-time mode changes from home.html
+    db.collection('settings').doc('config').onSnapshot(doc => {
+      if (doc.exists) applyPartyMode(doc.data().mode);
+    });
   </script>
 </body>
 </html>
